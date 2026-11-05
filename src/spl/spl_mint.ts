@@ -30,7 +30,7 @@ const rpcSubscriptions = createSolanaRpcSubscriptions(
 const token_decimals = 1_000_000n;
 
 //paste your mint address got from spl_init.ts
-const mint = address("E2Jazz2VXcVL9RZkn6ZFA4q1YGvgEvrns3Gr6w72DC4w");
+const mint = address("69dr3QpuKxgyJwZdvnPdQUdcudNM1ikjpoKeqFq38ZR3");
 
 (async () => {
   try {
@@ -43,8 +43,20 @@ const mint = address("E2Jazz2VXcVL9RZkn6ZFA4q1YGvgEvrns3Gr6w72DC4w");
     });
     console.log(`Your ata is : ${ata}`);
 
-    // const createAtaIx =
-    // const mintToIx =
+    // create our associated token account (ATA) for this mint
+    const createAtaIx = await getCreateAssociatedTokenInstructionAsync({
+      payer: signer,
+      mint,
+      owner: signer.address,
+    });
+
+    // mint 1000 tokens into it (amounts are in base units, 6 decimals)
+    const mintToIx = getMintToInstruction({
+      mint,
+      token: ata,
+      mintAuthority: signer,
+      amount: 1000n * token_decimals,
+    });
 
     const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
 
@@ -57,25 +69,25 @@ const mint = address("E2Jazz2VXcVL9RZkn6ZFA4q1YGvgEvrns3Gr6w72DC4w");
       msgWithPayer,
     );
 
-    // const txMessage = appendTransactionMessageInstructions(
-    //   [createAtaIx, mintToIx],
-    //   msgWithLiftime,
-    // );
+    const txMessage = appendTransactionMessageInstructions(
+      [createAtaIx, mintToIx],
+      msgWithLiftime,
+    );
 
-    // const signedTx = await signTransactionMessageWithSigners(txMessage);
+    const signedTx = await signTransactionMessageWithSigners(txMessage);
 
-    // assertIsTransactionWithBlockhashLifetime(signedTx);
+    assertIsTransactionWithBlockhashLifetime(signedTx);
 
-    // const signature = getSignatureFromTransaction(signedTx);
+    const signature = getSignatureFromTransaction(signedTx);
 
-    // const sendAndConfirm = sendAndConfirmTransactionFactory({
-    //   rpc,
-    //   rpcSubscriptions,
-    // });
+    const sendAndConfirm = sendAndConfirmTransactionFactory({
+      rpc,
+      rpcSubscriptions,
+    });
 
-    // await sendAndConfirm(signedTx, { commitment: "confirmed" });
+    await sendAndConfirm(signedTx, { commitment: "confirmed" });
 
-    // console.log(`mint txid: ${signature}`);
+    console.log(`mint txid: ${signature}`);
   } catch (error) {
     console.log(error);
   }

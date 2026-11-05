@@ -22,15 +22,20 @@ umi.use(mplCore());
 (async () => {
   try {
     const metadataUri =
-      "https://gateway.irys.xyz/BihKZnhMCvxN3i34cv25eEyFgUvBVGJQn1Gp11D4LxEi ";
+      "https://gateway.irys.xyz/GQRf22SD8S1LUYy2zZU74XTXXnYnvmVjwmefgZgf6W7P";
     const asset = generateSigner(umi);
 
     //add you nft name and metadata uri
-    // const tx = await create()
+    // creates a Core asset account; our wallet is owner and update authority
+    const tx = await create(umi, {
+      asset,
+      name: "dakeyyy NFT",
+      uri: metadataUri,
+    }).sendAndConfirm(umi);
 
-    // const signature = base58.deserialize(tx.signature)[0];
+    const signature = base58.deserialize(tx.signature)[0];
 
-    // console.log(`signature ${signature} , asset : ${asset.publicKey}`);
+    console.log(`signature ${signature} , asset : ${asset.publicKey}`);
   } catch (e) {
     console.log(`errior ${e}`);
   }

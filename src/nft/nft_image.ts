@@ -27,13 +27,16 @@ umi.use(signerIdentity(signer));
 (async () => {
   try {
     //chanege image path to your image path
-    const image = await readFile("file-path");
+    const image = await readFile("nft-2.png");
 
     //change the image name and mime type
-    // const file =
+    const file = createGenericFile(image, "nft-2.png", {
+      contentType: "image/png",
+    });
 
-    // const [myUri] =
-    // console.log("Your image URI: ", myUri);
+    // uploads to Irys (paid with devnet SOL) and returns a public URI
+    const [myUri] = await umi.uploader.upload([file]);
+    console.log("Your image URI: ", myUri);
   } catch (error) {
     console.log(error);
   }
